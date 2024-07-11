@@ -1,6 +1,7 @@
 proceed: bool = True
+sample: list[int] = [1, 2, 3, 4]
 
-def start() -> None:
+def main() -> None:
     # global proceed
     # proceed = False
 
@@ -10,6 +11,8 @@ def start() -> None:
     if proceed is not True:
         print('Cannot proceed...')
 
-if __name__ == "__main__":
-    start()
+def test() -> None:
+    ...
 
+if __name__ == "__main__":
+    main()
