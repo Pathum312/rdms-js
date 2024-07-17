@@ -13,6 +13,9 @@ def main() -> None:
 
 def test() -> None:
     ...
+    
+def test2() -> None:
+    ...
 
 if __name__ == "__main__":
     main()
