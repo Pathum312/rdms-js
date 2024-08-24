@@ -1,3 +1,5 @@
+from typing import Any
+
 class BinaryTree:
     def __init__(self, key: int, content: dict[str, str | int] | None = None) -> None:
         self.left: BinaryTree | None = None
@@ -25,15 +27,22 @@ class BinaryTree:
         else:
             self._content = content
     
-    def find_by_key(self, key: int):
+    def find_by_key(self, key: int) -> Any | dict[str, str | int] | None:
         if key < self._key:
             if self.left is not None:
-                self.left.find_by_key(key=key)
+                return self.left.find_by_key(key=key)
+            else:
+                return None
         elif key > self._key:
             if self.right is not None:
-                self.right.find_by_key(key=key)
+                return self.right.find_by_key(key=key)
+            else:
+                return None
         else:
-            print('Penis', self._key)
+            return {
+                'key': self._key,
+                'content': self._content
+            }
     
     def traverse_tree(self) -> None:
         print(f'Key: {self.key},\nContent: {self.content},\nleft: {self.left},\nright: {self.right}\n')
@@ -68,4 +77,6 @@ if __name__ == '__main__':
     )
     
     # tree.traverse_tree()
-    print(tree.find_by_key(key=1))
+    data: Any | dict[str, str | int] | None = tree.find_by_key(key=2)
+    if data:
+        print(f'key: {data['key']}')
