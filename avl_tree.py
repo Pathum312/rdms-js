@@ -82,6 +82,39 @@ class AVLTree:
             else:
                 self.insert(node=node.right, key=key)
 
+    def max_depth(self, node: Node | None) -> int:
+        """
+        Finds the max height of a subtree.
+
+        Parameters:
+            node (Node): Node object used to find the height.
+
+        Returns:
+            int: Height of the subtree.
+        """
+        if node is None:
+            return 0
+        else:
+            ldepth: int = self.max_depth(node=node.left)
+            rdepth: int = self.max_depth(node=node.right)
+
+            return max(ldepth, rdepth) + 1
+
+    def calculate_balance_factor(self, node: Node) -> int:
+        """
+        Calculating the balance factor of a node.
+
+        Parameters:
+            node (Node): The balance factor is calculated for this node.
+
+        Returns:
+            int: The balance factor of the Node object.
+        """
+        left_height: int = self.max_depth(node=node.left)
+        right_height: int = self.max_depth(node=node.right)
+
+        return left_height - right_height
+
     def right_rotation(self, node: Node) -> None:
         parent_node: Node = node
         child_node: Node = node.left  # type: ignore
@@ -130,39 +163,6 @@ class AVLTree:
 
         if node.right:
             self.preorder_traversal(node=node.right)
-
-    def max_depth(self, node: Node | None) -> int:
-        """
-        Finds the max height of a subtree.
-
-        Parameters:
-            node (Node): Node object used to find the height.
-
-        Returns:
-            int: Height of the subtree.
-        """
-        if node is None:
-            return 0
-        else:
-            ldepth: int = self.max_depth(node=node.left)
-            rdepth: int = self.max_depth(node=node.right)
-
-            return max(ldepth, rdepth) + 1
-
-    def calculate_balance_factor(self, node: Node) -> int:
-        """
-        Calculating the balance factor of a node.
-
-        Parameters:
-            node (Node): The balance factor is calculated for this node.
-
-        Returns:
-            int: The balance factor of the Node object.
-        """
-        left_height: int = self.max_depth(node=node.left)
-        right_height: int = self.max_depth(node=node.right)
-
-        return left_height - right_height
 
 
 # Print out all the details of a node
