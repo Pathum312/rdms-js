@@ -1,32 +1,27 @@
-# from typing import Any
-
 class Node:
     def __init__(self, content: dict[str, str | int]) -> None:
         self.left: Node | None = None
         self.right: Node | None = None
         self._content: dict[str, str | int] = content
         self._key: int = self.__getkey__(content=self._content)
-    
+
     def __getkey__(self, content: dict[str, str | int]) -> int:
         return len(str(object=content))
-    
+
     @property
     def key(self) -> int:
         return self._key
-    
+
     @property
     def content(self) -> dict[str, str | int] | None:
         return self._content
 
+
 class BinaryTree:
     def __init__(self, dbname: str) -> None:
         self._dbname: str = dbname
-        self.root = Node(
-            content={
-                'dbname': self._dbname
-            }
-        )
-    
+        self.root = Node(content={"dbname": self._dbname})
+
     # Add a new node or update an existing node
     def insert(self, parent_node: Node, new_node: Node) -> None:
         # Add a left node
@@ -44,16 +39,18 @@ class BinaryTree:
         # If the node already exists, then update it
         else:
             parent_node = new_node
-    
+
     def preorder_traversal(self, node: Node) -> None:
-        print(f'Key: {node.key},\nContent: {node.content},\nleft: {node.left},\nright: {node.right}\n')
-        
+        print(
+            f"Key: {node.key},\nContent: {node.content},\nleft: {node.left},\nright: {node.right}\n"
+        )
+
         if node.left:
             self.preorder_traversal(node=node.left)
-        
+
         if node.right:
             self.preorder_traversal(node=node.right)
-    
+
     # # Insert a new node or update the content of an existing node
     # def insert(self, content: dict[str, str | int]) -> None:
     #     key: int = self.__getkey__(content=content)
@@ -74,7 +71,7 @@ class BinaryTree:
     #     # If, it's the current node, just update the content
     #     else:
     #         self._content = content
-    
+
     # def find_by_key(self, key: int) -> Any | dict[str, str | int] | None:
     #     if key < self._key:
     #         if self.left is not None:
@@ -91,7 +88,7 @@ class BinaryTree:
     #             'key': self._key,
     #             'content': self._content
     #         }
-    
+
     # def traverse_tree(self) -> None:
     #     print(f'Key: {self._key},\nContent: {self._content},\nleft: {self.left},\nright: {self.right}\n')
     #     if self.left:
@@ -99,52 +96,30 @@ class BinaryTree:
     #     if self.right:
     #         self.right.traverse_tree()
 
-if __name__ == '__main__':
-    book_tree: BinaryTree = BinaryTree(dbname='Book Database')
+
+if __name__ == "__main__":
+    book_tree: BinaryTree = BinaryTree(dbname="Book Database")
     book_tree.insert(
         parent_node=book_tree.root,
-        new_node=Node(
-            content={
-                'title': 'Lord of the Rings',
-                'price': 30
-            }
-        )
+        new_node=Node(content={"title": "Lord of the Rings", "price": 30}),
+    )
+    book_tree.insert(
+        parent_node=book_tree.root,
+        new_node=Node(content={"title": "Harry Potter", "price": 20}),
+    )
+    book_tree.insert(
+        parent_node=book_tree.root,
+        new_node=Node(content={"title": "Goosebumps", "price": 15}),
     )
     book_tree.insert(
         parent_node=book_tree.root,
         new_node=Node(
-            content={
-                'title': 'Harry Potter',
-                'price': 20
-            }
-        )
+            content={"title": "A returner's magic should be special", "price": 25}
+        ),
     )
     book_tree.insert(
         parent_node=book_tree.root,
-        new_node=Node(
-            content={
-                'title': 'Goosebumps',
-                'price': 15
-            }
-        )
+        new_node=Node(content={"title": "Dune", "price": 10}),
     )
-    book_tree.insert(
-        parent_node=book_tree.root,
-        new_node=Node(
-            content={
-                'title': 'A returner\'s magic should be special',
-                'price': 25
-            }
-        )
-    )
-    book_tree.insert(
-        parent_node=book_tree.root,
-        new_node=Node(
-            content={
-                'title': 'Dune',
-                'price': 10
-            }
-        )
-    )
-    
+
     book_tree.preorder_traversal(node=book_tree.root)
