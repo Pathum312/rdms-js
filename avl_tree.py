@@ -37,12 +37,36 @@ class Node:
 
 
 class AVLTree:
+    """
+    A class representing a balancing binary tree.
+
+    Attributes:
+        key (int): The value stored in the node.
+        node (Node): The origin node; that is created, when the AVLTree object is initialzed.
+    """
+
     def __init__(self, key: int) -> None:
+        """
+        Initializes a AVLTree object
+
+        Parameters:
+            key (int): The value stored in the node.
+        """
         self._key: int = key
         self.node: Node = Node(key=self._key)
         self.node.root = True
 
     def insert(self, node: Node, key: int) -> None:
+        """
+        Add a new node to the binary tree.
+
+        Parameters:
+            node (Node): The node object the new the node object is being added too.
+            key (int): The value stored in the node.
+
+        Returns:
+            None
+        """
         # Add a left node
         if key < node.key:
             if node.left is None:
@@ -108,6 +132,15 @@ class AVLTree:
             self.preorder_traversal(node=node.right)
 
     def max_depth(self, node: Node | None) -> int:
+        """
+        Finds the max height of a subtree.
+
+        Parameters:
+            node (Node): Node object used to find the height.
+
+        Returns:
+            int: Height of the subtree.
+        """
         if node is None:
             return 0
         else:
@@ -117,6 +150,15 @@ class AVLTree:
             return max(ldepth, rdepth) + 1
 
     def calculate_balance_factor(self, node: Node) -> int:
+        """
+        Calculating the balance factor of a node.
+
+        Parameters:
+            node (Node): The balance factor is calculated for this node.
+
+        Returns:
+            int: The balance factor of the Node object.
+        """
         left_height: int = self.max_depth(node=node.left)
         right_height: int = self.max_depth(node=node.right)
 
@@ -145,4 +187,5 @@ if __name__ == "__main__":
 
     # print("After rotation\n")
     # tree.preorder_traversal(node=tree.node)
-    help(request=Node)
+    # help(request=Node)
+    help(request=AVLTree)
