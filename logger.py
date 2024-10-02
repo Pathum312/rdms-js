@@ -28,7 +28,7 @@ def LOGGER(_name: str, _filename: str) -> Logger:
     logger.setLevel(level=INFO)
 
     # File handler, which logs even debug logs.
-    filepath: str = validate_log_file(filename=_filename)
+    filepath: str = validate_log_dir(filename=_filename)
     file_handler = FileHandler(filename=filepath)
     file_handler.setLevel(level=DEBUG)
 
@@ -49,7 +49,7 @@ def LOGGER(_name: str, _filename: str) -> Logger:
     return logger
 
 
-def validate_log_file(filename: str) -> str:
+def validate_log_dir(filename: str) -> str:
     """
     Checks if the file directory exists.
 
