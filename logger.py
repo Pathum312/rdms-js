@@ -1,7 +1,6 @@
 import os
 from logging import (
     DEBUG,
-    ERROR,
     INFO,
     FileHandler,
     Formatter,
@@ -34,7 +33,7 @@ def LOGGER(_name: str, _filename: str) -> Logger:
 
     # Console handler with higher log level.
     console_handler = StreamHandler()
-    console_handler.setLevel(level=ERROR)
+    console_handler.setLevel(level=DEBUG)
 
     # Format for the logs and is added to the handlers.
     FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
