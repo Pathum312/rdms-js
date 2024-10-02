@@ -1,3 +1,8 @@
+from logging import Logger
+
+from logger import LOGGER
+
+
 class Node:
     """
     A class representing a node in a binary tree.
@@ -43,6 +48,7 @@ class AVLTree:
     Attributes:
         key (int): The value stored in the node.
         node (Node): The origin node; that is created, when the AVLTree object is initialzed.
+        logger (Logger): The logger will post logs to the tree.log file.
     """
 
     def __init__(self, key: int) -> None:
@@ -55,6 +61,9 @@ class AVLTree:
         self._key: int = key
         self.node: Node = Node(key=self._key)
         self.node.root = True
+        self.logger: Logger = LOGGER(_name="avl_tree.AVLTree", _filename="tree.log")
+        self.logger.info(msg=f"Creating AVL tree...")
+        self.logger.info(msg=f"Origin node {self.node.key} is created.")
 
     def insert(self, node: Node, key: int) -> None:
         """
@@ -72,6 +81,9 @@ class AVLTree:
             if node.left is None:
                 node.left = Node(key=key)
                 node.left.parent = node
+                self.logger.info(
+                    msg=f"Left child node {node.left.key} of node {node.key} is created."
+                )
             else:
                 self.insert(node=node.left, key=key)
         # Add a right node
@@ -79,6 +91,9 @@ class AVLTree:
             if node.right is None:
                 node.right = Node(key=key)
                 node.right.parent = node
+                self.logger.info(
+                    msg=f"Right child node {node.right.key} of node {node.key} is created."
+                )
             else:
                 self.insert(node=node.right, key=key)
 
@@ -176,9 +191,9 @@ def print_node(node: Node) -> None:
 
 
 if __name__ == "__main__":
-    # tree: AVLTree = AVLTree(key=10)
-    # tree.insert(node=tree.node, key=20)
-    # tree.insert(node=tree.node, key=30)
+    tree: AVLTree = AVLTree(key=10)
+    tree.insert(node=tree.node, key=20)
+    tree.insert(node=tree.node, key=30)
 
     # print("Initial\n")
     # tree.preorder_traversal(node=tree.node)
@@ -188,4 +203,4 @@ if __name__ == "__main__":
     # print("After rotation\n")
     # tree.preorder_traversal(node=tree.node)
     # help(request=Node)
-    help(request=AVLTree)
+    # help(request=AVLTree)
