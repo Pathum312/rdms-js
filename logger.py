@@ -21,7 +21,6 @@ def LOGGER(_name: str, _filename: str) -> Logger:
     Returns:
         Logger: An Logger object is returned.
     """
-
     # Create a logger for _name.
     logger: Logger = getLogger(name=_name)
     logger.setLevel(level=INFO)
@@ -58,7 +57,6 @@ def validate_log_dir(filename: str) -> str:
     Returns:
         str: Returns the filepath to the log file.
     """
-
     # Log files directory.
     file_dir: str = "./logs/"
     # Path to the log file.
