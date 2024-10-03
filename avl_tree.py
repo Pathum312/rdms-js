@@ -76,6 +76,13 @@ class AVLTree:
         Returns:
             None
         """
+        # If the key is not an int, so not add that node.
+        if type(key) is not int:
+            self.logger.error(
+                msg=f"Key should always be an int value. - {{key: {key}, type: {type(key)}}}"
+            )
+            return
+
         # Since the key is less than the key of the current node, add a left node.
         if key < node.key:
             # If the current node doesn't have a left child node, then add the left child node.
