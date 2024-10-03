@@ -76,24 +76,31 @@ class AVLTree:
         Returns:
             None
         """
-        # Add a left node
+        # Since the key is less than the key of the current node, add a left node.
         if key < node.key:
+            # If the current node doesn't have a left child node, then add the left child node.
             if node.left is None:
                 node.left = Node(key=key)
+                # Assign the current node as the parent of the new left child node.
                 node.left.parent = node
                 self.logger.info(
                     msg=f"Left child node {node.left.key} of node {node.key} is created."
                 )
+            # When there is already a left child node, run the function again but with left child node.
             else:
                 self.insert(node=node.left, key=key)
-        # Add a right node
+
+        # Since the key is more than the key of the current node, add a right node.
         if key > node.key:
+            # If the current node doesn't have a right child node, then add the right child node.
             if node.right is None:
                 node.right = Node(key=key)
+                # Assign the current node as the parent of the new right child node.
                 node.right.parent = node
                 self.logger.info(
                     msg=f"Right child node {node.right.key} of node {node.key} is created."
                 )
+            # When there is already a right child node, run the function again but with right child node.
             else:
                 self.insert(node=node.right, key=key)
 
@@ -171,7 +178,6 @@ class AVLTree:
 
     def preorder_traversal(self, node: Node) -> None:
         node.balance_factor = self.calculate_balance_factor(node=node)
-        print_node(node=node)
 
         if node.left:
             self.preorder_traversal(node=node.left)
@@ -180,27 +186,7 @@ class AVLTree:
             self.preorder_traversal(node=node.right)
 
 
-# Print out all the details of a node
-def print_node(node: Node) -> None:
-    print(f"key: {node.key}")
-    print(f"left: {node.left.key if node.left else node.left}")
-    print(f"right: {node.right.key if node.right else node.right}")
-    print(f"parent: {node.parent.key if node.parent else node.parent}")
-    print(f"balance factor: {node.balance_factor}")
-    print(f"root: {node.root}\n")
-
-
 if __name__ == "__main__":
     tree: AVLTree = AVLTree(key=10)
     tree.insert(node=tree.node, key=20)
     tree.insert(node=tree.node, key=30)
-
-    # print("Initial\n")
-    # tree.preorder_traversal(node=tree.node)
-
-    # tree.left_rotation(node=tree.node)
-
-    # print("After rotation\n")
-    # tree.preorder_traversal(node=tree.node)
-    # help(request=Node)
-    # help(request=AVLTree)
