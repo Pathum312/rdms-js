@@ -24,11 +24,11 @@ class Node:
             key (int): The value to be stored in the node.
         """
         self._key: int = key
+        self.root: bool = False
+        self.balance_factor: int = 0
         self.left: Node | None = None
         self.right: Node | None = None
-        self.balance_factor: int = 0
         self.parent: Node | None = None
-        self.root: bool = False
 
     @property
     def key(self) -> int:
@@ -114,8 +114,10 @@ class AVLTree:
         Returns:
             int: Height of the subtree.
         """
+        # If there isn't a node, return 0.
         if node is None:
             return 0
+        # If there is a node; add 1 to the relevant subtree.
         else:
             ldepth: int = self.max_depth(node=node.left)
             rdepth: int = self.max_depth(node=node.right)
@@ -141,25 +143,10 @@ class AVLTree:
         # Balance factor = Left Subtree Depth = Right Subtree Depth
         balance_factor: int = left_height - right_height
 
-        self.logger.info(
-            msg=f"Node {node.key} has a balance factor of {balance_factor}"
-        )
-
         return balance_factor
-
-    def preorder_traversal(self, node: Node) -> None:
-        node.balance_factor = self.calculate_balance_factor(node=node)
-
-        if node.left:
-            self.preorder_traversal(node=node.left)
-
-        if node.right:
-            self.preorder_traversal(node=node.right)
 
 
 if __name__ == "__main__":
     tree: AVLTree = AVLTree(key=10)
     tree.insert(node=tree.node, key=20)
     tree.insert(node=tree.node, key=30)
-
-    tree.preorder_traversal(node=tree.node)
