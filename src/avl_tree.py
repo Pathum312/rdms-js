@@ -76,13 +76,6 @@ class AVLTree:
         Returns:
             None
         """
-        # If the key is not an int, so not add that node.
-        if type(key) is not int:
-            self.logger.error(
-                msg=f"Key should always be an int value. - {{key: {key}, type: {type(key)}}}"
-            )
-            return
-
         # Since the key is less than the key of the current node, add a left node.
         if key < node.key:
             # If the current node doesn't have a left child node, then add the left child node.
@@ -131,7 +124,8 @@ class AVLTree:
 
     def calculate_balance_factor(self, node: Node) -> int:
         """
-        Calculating the balance factor of a node.
+        Calculating the balance factor of a node.\n
+        Balance Factor = Left Subtree Depth - Right Subtree Depth
 
         Parameters:
             node (Node): The balance factor is calculated for this node.
@@ -139,49 +133,19 @@ class AVLTree:
         Returns:
             int: The balance factor of the Node object.
         """
+        # Depth of the left subtree.
         left_height: int = self.max_depth(node=node.left)
+        # Depth of the right subtree.
         right_height: int = self.max_depth(node=node.right)
 
-        return left_height - right_height
+        # Balance factor = Left Subtree Depth = Right Subtree Depth
+        balance_factor: int = left_height - right_height
 
-    def right_rotation(self, node: Node) -> None:
-        parent_node: Node = node
-        child_node: Node = node.left  # type: ignore
+        self.logger.info(
+            msg=f"Node {node.key} has a balance factor of {balance_factor}"
+        )
 
-        self.swap_parent(parent_node=parent_node, child_node=child_node)
-
-        parent_node.left = None
-        parent_node.parent = child_node
-
-        child_node.right = parent_node
-
-    def left_rotation(self, node: Node) -> None:
-        parent_node: Node = node
-        child_node: Node = node.right  # type: ignore
-
-        self.swap_parent(parent_node=parent_node, child_node=child_node)
-
-        parent_node.right = None
-        parent_node.parent = child_node
-
-        child_node.left = parent_node
-
-    def left_right_rotation(self, node: Node) -> None:
-        parent_node: Node = node
-        child_node: Node = node.left  # type: ignore
-
-        self.left_rotation(node=child_node)
-        self.right_rotation(node=parent_node)
-
-    def swap_parent(self, parent_node: Node, child_node: Node) -> None:
-        if parent_node.root:
-            parent_node.root = False
-
-            child_node.root = True
-            child_node.parent = None
-            self.node = child_node
-        else:
-            child_node.parent = parent_node.parent
+        return balance_factor
 
     def preorder_traversal(self, node: Node) -> None:
         node.balance_factor = self.calculate_balance_factor(node=node)
@@ -197,3 +161,5 @@ if __name__ == "__main__":
     tree: AVLTree = AVLTree(key=10)
     tree.insert(node=tree.node, key=20)
     tree.insert(node=tree.node, key=30)
+
+    tree.preorder_traversal(node=tree.node)
