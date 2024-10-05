@@ -114,10 +114,10 @@ class AVLTree:
         Returns:
             int: Height of the subtree.
         """
-        # If there isn't a node, return 0.
+        # If a node doesn't exist, return 0.
         if node is None:
             return 0
-        # If there is a node; add 1 to the relevant subtree.
+        # If a node exists, add 1 to the count for that particular subtree.
         else:
             ldepth: int = self.max_depth(node=node.left)
             rdepth: int = self.max_depth(node=node.right)
