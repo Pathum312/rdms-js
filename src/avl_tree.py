@@ -1,6 +1,12 @@
+from enum import StrEnum
 from logging import Logger
 
 from logger import LOGGER
+
+
+class TRAVERSAL_FUNCTION(StrEnum):
+    CALCULATE = "CALCULATE"
+    FIND = "FIND"
 
 
 class Node:
@@ -145,8 +151,74 @@ class AVLTree:
 
         return balance_factor
 
+    def traversal(
+        self, node: Node | None, type: TRAVERSAL_FUNCTION | None = None
+    ) -> None | Node:
+        if node is None:
+            return
+
+        if type is TRAVERSAL_FUNCTION.CALCULATE:
+            node.balance_factor = self.calculate_balance_factor(node=node)
+        elif type is TRAVERSAL_FUNCTION.FIND:
+            unbalanced_node: Node | None = self.find_unbalanced_node(node=node)
+            if unbalanced_node is not None:
+                return unbalanced_node
+
+        if node.left:
+            self.traversal(node=node.left, type=type)
+
+        if node.right:
+            self.traversal(node=node.right, type=type)
+
+    def find_unbalanced_node(self, node: Node) -> Node | None:
+        if node.balance_factor > 1 or node.balance_factor < -1:
+            return node
+
+    def rotating(self, node: Node) -> None:
+        if node.balance_factor < 0:
+            if node.right.balance_factor < 0:  # type: ignore
+                self.logger.info(msg=f"Node {node.key} requires left rotation.")
+            elif node.right.balance_factor > 0:  # type: ignore
+                self.logger.info(msg=f"Node {node.key} requires right-left rotation.")
+        elif node.balance_factor > 0:
+            if node.left.balance_factor > 0:  # type: ignore
+                self.logger.info(msg=f"Node {node.key} requires right rotation.")
+            elif node.left.balance_factor < 0:  # type: ignore
+                self.logger.info(msg=f"Node {node.key} requires left-right rotation.")
+
+    def balancing(self, node: Node) -> None:
+        self.traversal(node=node, type=TRAVERSAL_FUNCTION.CALCULATE)
+        unbalanced_node: None | Node = self.traversal(
+            node=node, type=TRAVERSAL_FUNCTION.FIND
+        )
+        self.rotating(node=unbalanced_node)  # type: ignore
+
 
 if __name__ == "__main__":
-    tree: AVLTree = AVLTree(key=10)
+    # Right Rotation
+    tree: AVLTree = AVLTree(key=30)
     tree.insert(node=tree.node, key=20)
-    tree.insert(node=tree.node, key=30)
+    tree.insert(node=tree.node, key=10)
+
+    tree.balancing(node=tree.node)
+
+    # # Left Rotation
+    # tree: AVLTree = AVLTree(key=10)
+    # tree.insert(node=tree.node, key=20)
+    # tree.insert(node=tree.node, key=30)
+
+    # tree.balancing(node=tree.node)
+
+    # # Right-Left Rotation
+    # tree: AVLTree = AVLTree(key=10)
+    # tree.insert(node=tree.node, key=30)
+    # tree.insert(node=tree.node, key=20)
+
+    # tree.balancing(node=tree.node)
+
+    # # Left-Right Rotation
+    # tree: AVLTree = AVLTree(key=30)
+    # tree.insert(node=tree.node, key=10)
+    # tree.insert(node=tree.node, key=20)
+
+    # tree.balancing(node=tree.node)
