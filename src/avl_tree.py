@@ -5,6 +5,14 @@ from logger import LOGGER
 
 
 class TRAVERSAL_FUNCTION(StrEnum):
+    """
+    A class that holds StrEnum values.
+
+    Attributes:
+        CALCULATE (str): Used to trigger calculations.
+        FIND (str): Used to find a unbalanced node.
+    """
+
     CALCULATE = "CALCULATE"
     FIND = "FIND"
 
@@ -92,6 +100,8 @@ class AVLTree:
                 self.logger.info(
                     msg=f"Left child node {node.left.key} of node {node.key} is created."
                 )
+                # Balance the binary tree.
+                self.balancing(node=self.node)
             # When there is already a left child node, run the function again but with left child node.
             else:
                 self.insert(node=node.left, key=key)
@@ -106,6 +116,8 @@ class AVLTree:
                 self.logger.info(
                     msg=f"Right child node {node.right.key} of node {node.key} is created."
                 )
+                # Balance the binary tree.
+                self.balancing(node=self.node)
             # When there is already a right child node, run the function again but with right child node.
             else:
                 self.insert(node=node.right, key=key)
@@ -154,25 +166,54 @@ class AVLTree:
     def traversal(
         self, node: Node | None, type: TRAVERSAL_FUNCTION | None = None
     ) -> None | Node:
-        if node is None:
+        """
+        Travels through the binary treee using preorder logic.
+
+        Attributes:
+            node (Node | None): The initial node to start travelling from.
+            type (TRAVERSAL_FUNCTION | None): A StrEnum, that executest calculations or find specific nodes.
+
+        Returns:
+            Node | None: Returns an unbalanced node, or returns nothing.
+        """
+        # If node is None just return.
+        if not node:
             return
 
+        # Calculate the balance factor of the node.
         if type is TRAVERSAL_FUNCTION.CALCULATE:
             node.balance_factor = self.calculate_balance_factor(node=node)
+        # Find the unbalanced node.
         elif type is TRAVERSAL_FUNCTION.FIND:
             unbalanced_node: Node | None = self.find_unbalanced_node(node=node)
+            # Check if the returns value is not None.
             if unbalanced_node:
                 return unbalanced_node
 
+        # Travel along left child tree.
         self.traversal(node=node.left, type=type)
 
+        # Travel along right child tree.
         self.traversal(node=node.right, type=type)
 
     def find_unbalanced_node(self, node: Node) -> Node | None:
+        """
+        Check if the node is not balanced.
+
+        Attributes:
+            node (Node): Node that is going to be checked.
+
+        Returns:
+            Node | None: Returns the unbalanced node, if found.
+        """
+        # Balance factor has to be > 1 or < -1 to be considered unbalanced.
         if node.balance_factor > 1 or node.balance_factor < -1:
             return node
 
     def rotating(self, node: Node) -> None:
+        if not node:
+            return
+
         if node.balance_factor < 0:
             if node.right.balance_factor < 0:  # type: ignore
                 self.logger.info(msg=f"Node {node.key} requires left rotation.")
@@ -185,10 +226,22 @@ class AVLTree:
                 self.logger.info(msg=f"Node {node.key} requires left-right rotation.")
 
     def balancing(self, node: Node) -> None:
+        """
+        Balanacing the node tree.
+
+        Attributes:
+            node (Node): Origin node must always be passed here.
+
+        Returns:
+            None
+        """
+        # Calculating the balance factor for the nodes.
         self.traversal(node=node, type=TRAVERSAL_FUNCTION.CALCULATE)
+        # Find the unbalanced node from the binary tree.
         unbalanced_node: None | Node = self.traversal(
             node=node, type=TRAVERSAL_FUNCTION.FIND
         )
+        # Rotating the unbalanced nodes to balance the binary tree.
         self.rotating(node=unbalanced_node)  # type: ignore
 
 
@@ -198,25 +251,17 @@ if __name__ == "__main__":
     tree.insert(node=tree.node, key=20)
     tree.insert(node=tree.node, key=10)
 
-    tree.balancing(node=tree.node)
-
     # # Left Rotation
     # tree: AVLTree = AVLTree(key=10)
     # tree.insert(node=tree.node, key=20)
     # tree.insert(node=tree.node, key=30)
-
-    # tree.balancing(node=tree.node)
 
     # # Right-Left Rotation
     # tree: AVLTree = AVLTree(key=10)
     # tree.insert(node=tree.node, key=30)
     # tree.insert(node=tree.node, key=20)
 
-    # tree.balancing(node=tree.node)
-
     # # Left-Right Rotation
     # tree: AVLTree = AVLTree(key=30)
     # tree.insert(node=tree.node, key=10)
     # tree.insert(node=tree.node, key=20)
-
-    # tree.balancing(node=tree.node)
