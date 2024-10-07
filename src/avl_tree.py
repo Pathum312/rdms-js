@@ -161,14 +161,12 @@ class AVLTree:
             node.balance_factor = self.calculate_balance_factor(node=node)
         elif type is TRAVERSAL_FUNCTION.FIND:
             unbalanced_node: Node | None = self.find_unbalanced_node(node=node)
-            if unbalanced_node is not None:
+            if unbalanced_node:
                 return unbalanced_node
 
-        if node.left:
-            self.traversal(node=node.left, type=type)
+        self.traversal(node=node.left, type=type)
 
-        if node.right:
-            self.traversal(node=node.right, type=type)
+        self.traversal(node=node.right, type=type)
 
     def find_unbalanced_node(self, node: Node) -> Node | None:
         if node.balance_factor > 1 or node.balance_factor < -1:
