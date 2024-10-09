@@ -157,27 +157,46 @@ class AVLTree:
         return balance_factor
 
     def balancing(self, stack: list[Node]) -> None:
+        """
+        Calculates the balance factors for all the nodes, then rotates the unbalanced nodes.
+
+        Attributes:
+            stack (list[Node]): List of nodes in the order, they were inserted to the tree.
+
+        Returns:
+            None
+        """
+        # While the node stack is not empty.
         while stack:
+            # Get the last node from the list.
             node: Node = stack.pop()
+            # Calculate the balance factor for that node.
             node.balance_factor = self.calculate_balance_factor(node=node)
 
+            # If the balance factor is greater that 1, there is more child nodes on the left side.
             if node.balance_factor > 1:
                 self.logger.info(
                     msg=f"Node {node.key} has a balance factor of {node.balance_factor}."
                 )
 
+                # If the balance factor is less than 1, rotate left first.
                 if self.calculate_balance_factor(node=node.left) < 0:  # type: ignore
-                    print(f"Rotate node {node.left} to the left.")
+                    self.rotate_left(node=node.left)  # type: ignore
 
+                # Finally, rotate the node to the right.
                 self.rotate_right(node=node)
+            # If the balance factor is greater that 1, there is more child nodes on the right side.
             elif node.balance_factor < -1:
                 self.logger.info(
                     msg=f"Node {node.key} has a balance factor of {node.balance_factor}."
                 )
 
+                # If the balance factor is greater than 1, rotate right first.
                 if self.calculate_balance_factor(node=node.right) > 0:  # type: ignore
                     self.rotate_right(node=node.right)  # type: ignore
-                print(f"Rotate node {node.key} to the left.")
+
+                # Finally, rotate the node to the left.
+                self.rotate_left(node=node)
 
     def rotate_right(self, node: Node) -> None:
         """
@@ -227,6 +246,54 @@ class AVLTree:
 
         self.logger.info(msg=f"Rotated right at node {node.key}.")
 
+    def rotate_left(self, node: Node) -> None:
+        """
+        Rotate the unblanced node to the right.
+
+        Attributes:
+            node (Node): Unblanced node that is going to be rotated.
+
+        Returns:
+            None
+        """
+        self.logger.info(msg=f"Node {node.key} requires left rotation.")
+        self.logger.info(msg=f"Rotating...")
+
+        # Right child node of the unbalanced node.
+        child_node: Node = node.right  # type: ignore
+        # Parent node of the unbalanced node.
+        parent_node: Node = node.parent  # type: ignore
+
+        # If the child node has a left child node;
+        # Assign it as the right child node of the unbalanced node.
+        if child_node.left:
+            node.right = child_node.left
+        # If there is no child node;
+        # Assign None to the right of the unbalanced node.
+        else:
+            node.right = None
+
+        # The child node becomes the parent of the unbalanced node.
+        node.parent = child_node
+        # The unbalanced node becomes the right child node of the child node.
+        child_node.left = node
+
+        # If the unbalanced node is the root node.
+        if node.root:
+            # Mark the unbalanced node as not the root node.
+            node.root = False
+            # Mark the child node as the root node.
+            child_node.root = True
+            self.node = child_node
+        # If, it is not the root node, swap the parents.
+        else:
+            # The parent node of the unbalanced node, becomes the parent of the child node.
+            child_node.parent = parent_node
+            # The right child node the parent node becomes the child node.
+            parent_node.right = child_node
+
+        self.logger.info(msg=f"Rotated left at node {node.key}.")
+
 
 if __name__ == "__main__":
     # Right Rotation
@@ -245,10 +312,10 @@ if __name__ == "__main__":
 
     # # Right-Left Rotation
     # tree: AVLTree = AVLTree(key=10)
-    # tree.insert(node=tree.node, key=30)
-    # tree.insert(node=tree.node, key=20)
+    # tree.insert(key=30)
+    # tree.insert(key=20)
 
     # # Left-Right Rotation
     # tree: AVLTree = AVLTree(key=30)
-    # tree.insert(node=tree.node, key=10)
-    # tree.insert(node=tree.node, key=20)
+    # tree.insert(key=10)
+    # tree.insert(key=20)
