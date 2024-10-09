@@ -236,13 +236,15 @@ class AVLTree:
             node.root = False
             # Mark the child node as the root node.
             child_node.root = True
+            # Since, the child node is now the root node, it doesn't have a parent node.
+            child_node.parent = None
             self.node = child_node
         # If, it is not the root node, swap the parents.
         else:
             # The parent node of the unbalanced node, becomes the parent of the child node.
             child_node.parent = parent_node
             # The left child node the parent node becomes the child node.
-            parent_node.left = child_node
+            parent_node.right = child_node
 
         self.logger.info(msg=f"Rotated right at node {node.key}.")
 
@@ -284,13 +286,15 @@ class AVLTree:
             node.root = False
             # Mark the child node as the root node.
             child_node.root = True
+            # Since, the child node is now the root node, it doesn't have a parent node.
+            child_node.parent = None
             self.node = child_node
         # If, it is not the root node, swap the parents.
         else:
             # The parent node of the unbalanced node, becomes the parent of the child node.
             child_node.parent = parent_node
             # The right child node the parent node becomes the child node.
-            parent_node.right = child_node
+            parent_node.left = child_node
 
         self.logger.info(msg=f"Rotated left at node {node.key}.")
 
