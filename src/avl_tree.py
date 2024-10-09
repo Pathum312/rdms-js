@@ -76,6 +76,7 @@ class AVLTree:
             None
         """
         node: Node = self.node
+        # List of nodes.
         stack: list[Node] = []
 
         while True:
@@ -108,6 +109,7 @@ class AVLTree:
                 # If it does have a right node, loop through the next right child node.
                 node = node.right
             else:
+                # Do not duplicate a existing node.
                 return
 
         # Balance the binary tree
