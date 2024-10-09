@@ -30,6 +30,7 @@ class TestAVLTree:
         Returns:
             None
         """
+
         # Create the tree.
         tree: AVLTree = AVLTree(key=10)
 
@@ -51,6 +52,13 @@ class TestAVLTree:
         assert tree.node.right.parent.key is 10  # type: ignore
 
     def test_right_rotation(self) -> None:
+        """
+        Testing whether, the right rotation logic works.
+
+        Returns:
+            None
+        """
+
         # Create a AVL Tree.
         tree: AVLTree = AVLTree(key=30)
         tree.insert(key=20)
@@ -78,6 +86,13 @@ class TestAVLTree:
         assert tree.node.right.parent.key is 20  # type: ignore
 
     def test_left_rotation(self) -> None:
+        """
+        Testing whether, the left rotation logic works.
+
+        Returns:
+            None
+        """
+
         # Create a AVL Tree.
         tree: AVLTree = AVLTree(key=10)
         tree.insert(key=20)
@@ -105,6 +120,13 @@ class TestAVLTree:
         assert tree.node.right.parent.key is 20  # type: ignore
 
     def test_left_right_rotation(self) -> None:
+        """
+        Testing whether, the left-right rotation logic works.
+
+        Returns:
+            None
+        """
+
         # Create a AVL Tree.
         tree: AVLTree = AVLTree(key=30)
         tree.insert(key=10)
@@ -132,6 +154,13 @@ class TestAVLTree:
         assert tree.node.right.parent.key is 20  # type: ignore
 
     def test_right_left_rotation(self) -> None:
+        """
+        Testing whether, the right-left rotation logic works.
+
+        Returns:
+            None
+        """
+
         # Create a AVL Tree.
         tree: AVLTree = AVLTree(key=10)
         tree.insert(key=30)
