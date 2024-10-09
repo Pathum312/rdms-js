@@ -18,10 +18,10 @@ class TestAVLTree:
         tree: AVLTree = AVLTree(key=10)
 
         # Add the first child node.
-        tree.insert(node=tree.node, key=20)
+        tree.insert(key=20)
 
         # Add the second child node.
-        tree.insert(node=tree.node, key=30)
+        tree.insert(key=30)
 
         # Test and validate the first child node.
         assert tree.node.right.key is 20  # type: ignore

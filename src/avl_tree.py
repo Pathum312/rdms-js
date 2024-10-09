@@ -93,7 +93,7 @@ class AVLTree:
                         msg=f"Left child node {node.left.key} of node {node.key} is created."
                     )
                     break
-                # If it does have a left node, loop through the next lefy child node.
+                # If, it does have a left node, then loop through the next lefy child node.
                 node = node.left
             # Since the key is more than the key of the current node, add a right node.
             elif key > node.key:
@@ -106,7 +106,7 @@ class AVLTree:
                         msg=f"Right child node {node.right.key} of node {node.key} is created."
                     )
                     break
-                # If it does have a right node, loop through the next right child node.
+                # If, it does have a right node, then loop through the next right child node.
                 node = node.right
             else:
                 # Do not duplicate a existing node.
@@ -177,25 +177,52 @@ class AVLTree:
 
                 if self.calculate_balance_factor(node=node.right) > 0:  # type: ignore
                     self.rotate_right(node=node.right)  # type: ignore
-                print(f"Rotate node {node.left} to the left.")
+                print(f"Rotate node {node.key} to the left.")
 
     def rotate_right(self, node: Node) -> None:
+        """
+        Rotate the unblanced node to the right.
+
+        Attributes:
+            node (Node): Unblanced node that is going to be rotated.
+
+        Returns:
+            None
+        """
         self.logger.info(msg=f"Node {node.key} requires right rotation.")
         self.logger.info(msg=f"Rotating...")
 
+        # Left child node of the unbalanced node.
         child_node: Node = node.left  # type: ignore
+        # Parent node of the unbalanced node.
         parent_node: Node = node.parent  # type: ignore
 
-        node.left = None
+        # If the child node has a right child node;
+        # Assign it as the left child node of the unbalanced node.
+        if child_node.right:
+            node.left = child_node.right
+        # If there is no child node;
+        # Assign None to the left of the unbalanced node.
+        else:
+            node.left = None
+
+        # The child node becomes the parent of the unbalanced node.
         node.parent = child_node
+        # The unbalanced node becomes the right child node of the child node.
         child_node.right = node
 
+        # If the unbalanced node is the root node.
         if node.root:
+            # Mark the unbalanced node as not the root node.
             node.root = False
+            # Mark the child node as the root node.
             child_node.root = True
             self.node = child_node
+        # If, it is not the root node, swap the parents.
         else:
+            # The parent node of the unbalanced node, becomes the parent of the child node.
             child_node.parent = parent_node
+            # The left child node the parent node becomes the child node.
             parent_node.left = child_node
 
         self.logger.info(msg=f"Rotated right at node {node.key}.")
@@ -208,11 +235,13 @@ if __name__ == "__main__":
     tree.insert(key=10)
     tree.insert(key=8)
     tree.insert(key=6)
+    tree.insert(key=5)
+    tree.insert(key=4)
 
     # # Left Rotation
     # tree: AVLTree = AVLTree(key=10)
-    # tree.insert(node=tree.node, key=20)
-    # tree.insert(node=tree.node, key=30)
+    # tree.insert(key=20)
+    # tree.insert(key=30)
 
     # # Right-Left Rotation
     # tree: AVLTree = AVLTree(key=10)
