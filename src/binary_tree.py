@@ -1,125 +1,126 @@
+from logging import Logger
+
+from logger import LOGGER
+
+
 class Node:
-    def __init__(self, content: dict[str, str | int]) -> None:
+    def __init__(self, key: int) -> None:
+        self._key: int = key
+        self.root: bool = False
+        self.balance_factor: int = 0
         self.left: Node | None = None
         self.right: Node | None = None
-        self._content: dict[str, str | int] = content
-        self._key: int = self.__getkey__(content=self._content)
-
-    def __getkey__(self, content: dict[str, str | int]) -> int:
-        return len(str(object=content))
+        self.parent: Node | None = None
 
     @property
     def key(self) -> int:
         return self._key
 
-    @property
-    def content(self) -> dict[str, str | int] | None:
-        return self._content
 
+class AVLTree:
+    def __init__(self, key: int) -> None:
+        self.node: Node = Node(key=key)
+        self.node.root = True
+        self.logger: Logger = LOGGER(_name="avl_tree.AVLTree", _filename="tree.log")
+        self.logger.info(msg="Creating AVL tree...")
+        self.logger.info(msg=f"Origin node {self.node.key} is created.")
 
-class BinaryTree:
-    def __init__(self, dbname: str) -> None:
-        self._dbname: str = dbname
-        self.root = Node(content={"dbname": self._dbname})
+    def insert(self, key: int) -> None:
+        stack = []  # Stack to keep track of nodes
+        node = self.node
 
-    # Add a new node or update an existing node
-    def insert(self, parent_node: Node, new_node: Node) -> None:
-        # Add a left node
-        if new_node.key < parent_node.key:
-            if parent_node.left is None:
-                parent_node.left = new_node
+        while True:
+            stack.append(node)
+            if key < node.key:
+                if node.left is None:
+                    node.left = Node(key=key)
+                    node.left.parent = node
+                    self.logger.info(
+                        msg=f"Left child node {node.left.key} of node {node.key} is created."
+                    )
+                    break
+                node = node.left
+            elif key > node.key:
+                if node.right is None:
+                    node.right = Node(key=key)
+                    node.right.parent = node
+                    self.logger.info(
+                        msg=f"Right child node {node.right.key} of node {node.key} is created."
+                    )
+                    break
+                node = node.right
             else:
-                self.insert(parent_node=parent_node.left, new_node=new_node)
-        # Add a right node
-        elif new_node.key > parent_node.key:
-            if parent_node.right is None:
-                parent_node.right = new_node
-            else:
-                self.insert(parent_node=parent_node.right, new_node=new_node)
-        # If the node already exists, then update it
+                # Key already exists, do not insert duplicates
+                return
+
+        self.balance(stack)
+
+    def max_depth(self, node: Node | None) -> int:
+        if node is None:
+            return 0
+        return max(self.max_depth(node.left), self.max_depth(node.right)) + 1
+
+    def calculate_balance_factor(self, node: Node) -> int:
+        return self.max_depth(node.left) - self.max_depth(node.right)
+
+    def balance(self, stack: list[Node]) -> None:
+        while stack:
+            node = stack.pop()
+            node.balance_factor = self.calculate_balance_factor(node)
+
+            if node.balance_factor > 1:
+                if self.calculate_balance_factor(node.left) < 0:
+                    self.rotate_left(node.left)  # Left-Right case
+                self.rotate_right(node)  # Right case
+            elif node.balance_factor < -1:
+                if self.calculate_balance_factor(node.right) > 0:
+                    self.rotate_right(node.right)  # Right-Left case
+                self.rotate_left(node)  # Left case
+
+    def rotate_left(self, node: Node) -> None:
+        right_node = node.right
+        node.right = right_node.left
+        if right_node.left:
+            right_node.left.parent = node
+        right_node.parent = node.parent
+
+        if node.parent is None:
+            self.node = right_node
+            right_node.root = True
+        elif node == node.parent.left:
+            node.parent.left = right_node
         else:
-            parent_node = new_node
+            node.parent.right = right_node
 
-    def preorder_traversal(self, node: Node) -> None:
-        print(
-            f"Key: {node.key},\nContent: {node.content},\nleft: {node.left},\nright: {node.right}\n"
-        )
+        right_node.left = node
+        node.parent = right_node
 
-        if node.left:
-            self.preorder_traversal(node=node.left)
+        self.logger.info(msg=f"Rotated left at node {node.key}")
 
-        if node.right:
-            self.preorder_traversal(node=node.right)
+    def rotate_right(self, node: Node) -> None:
+        left_node = node.left
+        node.left = left_node.right
+        if left_node.right:
+            left_node.right.parent = node
+        left_node.parent = node.parent
 
-    # # Insert a new node or update the content of an existing node
-    # def insert(self, content: dict[str, str | int]) -> None:
-    #     key: int = self.__getkey__(content=content)
-    #     # If current node has no left node, create left node
-    #     # Or check the left node to create a new left node
-    #     if key < self._key:
-    #         if self.left is None:
-    #             self.left = BinaryTree(content=content)
-    #         else:
-    #             self.left.insert(content=content)
-    #     # If current node has no right node, create right node
-    #     # Or check the right node to create a new right node
-    #     elif key > self._key:
-    #         if self.right is None:
-    #             self.right = BinaryTree(content=content)
-    #         else:
-    #             self.right.insert(content=content)
-    #     # If, it's the current node, just update the content
-    #     else:
-    #         self._content = content
+        if node.parent is None:
+            self.node = left_node
+            left_node.root = True
+        elif node == node.parent.right:
+            node.parent.right = left_node
+        else:
+            node.parent.left = left_node
 
-    # def find_by_key(self, key: int) -> Any | dict[str, str | int] | None:
-    #     if key < self._key:
-    #         if self.left is not None:
-    #             return self.left.find_by_key(key=key)
-    #         else:
-    #             return None
-    #     elif key > self._key:
-    #         if self.right is not None:
-    #             return self.right.find_by_key(key=key)
-    #         else:
-    #             return None
-    #     else:
-    #         return {
-    #             'key': self._key,
-    #             'content': self._content
-    #         }
+        left_node.right = node
+        node.parent = left_node
 
-    # def traverse_tree(self) -> None:
-    #     print(f'Key: {self._key},\nContent: {self._content},\nleft: {self.left},\nright: {self.right}\n')
-    #     if self.left:
-    #         self.left.traverse_tree()
-    #     if self.right:
-    #         self.right.traverse_tree()
+        self.logger.info(msg=f"Rotated right at node {node.key}")
 
 
 if __name__ == "__main__":
-    book_tree: BinaryTree = BinaryTree(dbname="Book Database")
-    book_tree.insert(
-        parent_node=book_tree.root,
-        new_node=Node(content={"title": "Lord of the Rings", "price": 30}),
-    )
-    book_tree.insert(
-        parent_node=book_tree.root,
-        new_node=Node(content={"title": "Harry Potter", "price": 20}),
-    )
-    book_tree.insert(
-        parent_node=book_tree.root,
-        new_node=Node(content={"title": "Goosebumps", "price": 15}),
-    )
-    book_tree.insert(
-        parent_node=book_tree.root,
-        new_node=Node(
-            content={"title": "A returner's magic should be special", "price": 25}
-        ),
-    )
-    book_tree.insert(
-        parent_node=book_tree.root,
-        new_node=Node(content={"title": "Dune", "price": 10}),
-    )
-
-    book_tree.preorder_traversal(node=book_tree.root)
+    tree = AVLTree(key=30)
+    tree.insert(20)
+    tree.insert(10)
+    tree.insert(8)
+    tree.insert(6)

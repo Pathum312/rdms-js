@@ -65,48 +65,53 @@ class AVLTree:
         self.logger.info(msg=f"Creating AVL tree...")
         self.logger.info(msg=f"Origin node {self.node.key} is created.")
 
-    def insert(self, node: Node, key: int) -> None:
+    def insert(self, key: int) -> None:
         """
         Add a new node to the binary tree.
 
         Parameters:
-            node (Node): The node object the new the node object is being added too.
             key (int): The value stored in the node.
 
         Returns:
             None
         """
-        # Since the key is less than the key of the current node, add a left node.
-        if key < node.key:
-            # If the current node doesn't have a left child node, then add the left child node.
-            if node.left is None:
-                node.left = Node(key=key)
-                # Assign the current node as the parent of the new left child node.
-                node.left.parent = node
-                self.logger.info(
-                    msg=f"Left child node {node.left.key} of node {node.key} is created."
-                )
-                # Balance the binary tree.
-                self.balancing(node=node.left)
-            # When there is already a left child node, run the function again but with left child node.
-            else:
-                self.insert(node=node.left, key=key)
+        node: Node = self.node
+        stack: list[Node] = []
 
-        # Since the key is more than the key of the current node, add a right node.
-        if key > node.key:
-            # If the current node doesn't have a right child node, then add the right child node.
-            if node.right is None:
-                node.right = Node(key=key)
-                # Assign the current node as the parent of the new right child node.
-                node.right.parent = node
-                self.logger.info(
-                    msg=f"Right child node {node.right.key} of node {node.key} is created."
-                )
-                # Balance the binary tree.
-                self.balancing(node=node.right)
-            # When there is already a right child node, run the function again but with right child node.
+        while True:
+            stack.append(node)
+
+            # Since the key is less than the key of the current node, add a left node.
+            if key < node.key:
+                # If the current node doesn't have a left child node, then add the left child node.
+                if not node.left:
+                    node.left = Node(key=key)
+                    # Assign the current node as the parent of the new left child node.
+                    node.left.parent = node
+                    self.logger.info(
+                        msg=f"Left child node {node.left.key} of node {node.key} is created."
+                    )
+                    break
+                # If it does have a left node, loop through the next lefy child node.
+                node = node.left
+            # Since the key is more than the key of the current node, add a right node.
+            elif key > node.key:
+                # If the current node doesn't have a right child node, then add the right child node.
+                if not node.right:
+                    node.right = Node(key=key)
+                    # Assign the current node as the parent of the new right child node.
+                    node.right.parent = node
+                    self.logger.info(
+                        msg=f"Right child node {node.right.key} of node {node.key} is created."
+                    )
+                    break
+                # If it does have a right node, loop through the next right child node.
+                node = node.right
             else:
-                self.insert(node=node.right, key=key)
+                return
+
+        # Balance the binary tree
+        self.balancing(stack=stack)
 
     def max_depth(self, node: Node | None) -> int:
         """
@@ -119,14 +124,14 @@ class AVLTree:
             int: Height of the subtree.
         """
         # If a node doesn't exist, return 0.
-        if node is None:
+        if not node:
             return 0
-        # If a node exists, add 1 to the count for that particular subtree.
-        else:
-            ldepth: int = self.max_depth(node=node.left)
-            rdepth: int = self.max_depth(node=node.right)
 
-            return max(ldepth, rdepth) + 1
+        # If a node exists, add 1 to the count for that particular subtree.
+        ldepth: int = self.max_depth(node=node.left)
+        rdepth: int = self.max_depth(node=node.right)
+
+        return max(ldepth, rdepth) + 1
 
     def calculate_balance_factor(self, node: Node) -> int:
         """
@@ -149,88 +154,58 @@ class AVLTree:
 
         return balance_factor
 
-    def calculating(self, node: Node | None) -> None:
-        """
-        Travels through the binary treee using preorder logic.
+    def balancing(self, stack: list[Node]) -> None:
+        while stack:
+            node: Node = stack.pop()
+            node.balance_factor = self.calculate_balance_factor(node=node)
 
-        Attributes:
-            node (Node | None): The initial node to start travelling from.
+            if node.balance_factor > 1:
+                self.logger.info(
+                    msg=f"Node {node.key} has a balance factor of {node.balance_factor}."
+                )
 
-        Returns:
-            None
-        """
-        # If node is None just return.
-        if not node:
-            return
+                if self.calculate_balance_factor(node=node.left) < 0:  # type: ignore
+                    print(f"Rotate node {node.left} to the left.")
 
-        # Calculate the balance factor for the current node.
-        node.balance_factor = self.calculate_balance_factor(node=node)
+                self.rotate_right(node=node)
+            elif node.balance_factor < -1:
+                self.logger.info(
+                    msg=f"Node {node.key} has a balance factor of {node.balance_factor}."
+                )
 
-        print(f"Node {node.key} with balance factor {node.balance_factor}")
+                if self.calculate_balance_factor(node=node.right) > 0:  # type: ignore
+                    self.rotate_right(node=node.right)  # type: ignore
+                print(f"Rotate node {node.left} to the left.")
 
-        # Travel along left child tree.
-        self.calculating(node=node.left)
+    def rotate_right(self, node: Node) -> None:
+        self.logger.info(msg=f"Node {node.key} requires right rotation.")
+        self.logger.info(msg=f"Rotating...")
 
-        # Travel along right child tree.
-        self.calculating(node=node.right)
+        child_node: Node = node.left  # type: ignore
+        parent_node: Node = node.parent  # type: ignore
 
-    def find_unbalanced_node(self, node: Node) -> Node | None:
-        """
-        Check if the node is not balanced.
+        node.left = None
+        node.parent = child_node
+        child_node.right = node
 
-        Attributes:
-            node (Node): Node that is going to be checked.
+        if node.root:
+            node.root = False
+            child_node.root = True
+            self.node = child_node
+        else:
+            child_node.parent = parent_node
+            parent_node.left = child_node
 
-        Returns:
-            Node | None: Returns the unbalanced node, if found.
-        """
-        if node:
-            # Balance factor has to be > 1 or < -1 to be considered unbalanced.
-            if node.balance_factor > 1 or node.balance_factor < -1:
-                return node
-
-            return self.find_unbalanced_node(node=node.parent)  # type: ignore
-
-    def rotating(self, node: Node) -> None:
-        if not node:
-            return
-
-        if node.balance_factor < 0:
-            if node.right.balance_factor < 0:  # type: ignore
-                self.logger.info(msg=f"Node {node.key} requires left rotation.")
-            elif node.right.balance_factor > 0:  # type: ignore
-                self.logger.info(msg=f"Node {node.key} requires right-left rotation.")
-        elif node.balance_factor > 0:
-            if node.left.balance_factor > 0:  # type: ignore
-                self.logger.info(msg=f"Node {node.key} requires right rotation.")
-            elif node.left.balance_factor < 0:  # type: ignore
-                self.logger.info(msg=f"Node {node.key} requires left-right rotation.")
-
-    def balancing(self, node: Node) -> None:
-        """
-        Balanacing the node tree.
-
-        Attributes:
-            node (Node): Origin node must always be passed here.
-
-        Returns:
-            None
-        """
-        # Calculating the balance factor for the nodes.
-        self.calculating(node=self.node)
-        # Find the unbalanced node in the binary tree.
-        unbalanced_node: Node | None = self.find_unbalanced_node(node=node)
-        if unbalanced_node:
-            print(unbalanced_node.key)
+        self.logger.info(msg=f"Rotated right at node {node.key}.")
 
 
 if __name__ == "__main__":
     # Right Rotation
-    tree: AVLTree = AVLTree(key=20)
-    tree.insert(node=tree.node, key=10)
-    tree.insert(node=tree.node, key=30)
-    tree.insert(node=tree.node, key=8)
-    tree.insert(node=tree.node, key=6)
+    tree: AVLTree = AVLTree(key=30)
+    tree.insert(key=20)
+    tree.insert(key=10)
+    tree.insert(key=8)
+    tree.insert(key=6)
 
     # # Left Rotation
     # tree: AVLTree = AVLTree(key=10)
