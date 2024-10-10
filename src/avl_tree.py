@@ -115,6 +115,28 @@ class AVLTree:
         # Balance the binary tree
         self.balancing(stack=stack)
 
+    def show(
+        self,
+        node: Node | None,
+        level: int = 0,
+        prefix: str = "\nL - Left child node\nR - Right child node\n\nRoot--- ",
+    ) -> None:
+        """
+        Visualizes the AVL tree.
+
+        Attributes:
+            node (Node): Always pass the root node.
+            level (int): Default is 0.
+            prefix (str): Is set to Root.
+
+        Returns:
+            None
+        """
+        if node:
+            print(" " * (level * 4) + prefix + str(object=node.key))
+            self.show(node=node.left, level=level + 1, prefix="L--- ")
+            self.show(node=node.right, level=level + 1, prefix="R--- ")
+
     def max_depth(self, node: Node | None) -> int:
         """
         Finds the max height of a subtree.

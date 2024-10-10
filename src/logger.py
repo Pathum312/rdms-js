@@ -1,4 +1,3 @@
-import os
 from logging import (
     DEBUG,
     INFO,
@@ -8,6 +7,8 @@ from logging import (
     StreamHandler,
     getLogger,
 )
+
+from utils import validate_dir
 
 
 def LOGGER(_name: str, _filename: str) -> Logger:
@@ -26,7 +27,7 @@ def LOGGER(_name: str, _filename: str) -> Logger:
     logger.setLevel(level=INFO)
 
     # File handler, which logs even debug logs.
-    filepath: str = validate_log_dir(filename=_filename)
+    filepath: str = validate_dir(filename=_filename, type="LOG")
     file_handler = FileHandler(filename=filepath)
     file_handler.setLevel(level=DEBUG)
 
@@ -47,30 +48,8 @@ def LOGGER(_name: str, _filename: str) -> Logger:
     return logger
 
 
-def validate_log_dir(filename: str) -> str:
-    """
-    Checks if the file directory exists.
-
-    Parameters:
-        filename (str): Name of the log file.
-
-    Returns:
-        str: Returns the filepath to the log file.
-    """
-    # Log files directory.
-    file_dir: str = "./logs/"
-    # Path to the log file.
-    filepath: str = os.path.join(file_dir, filename)
-
-    # If the file directory doesn't exist, create the directory.
-    if not os.path.exists(path=file_dir):
-        os.makedirs(name=file_dir)
-
-    return filepath
-
-
 if __name__ == "__main__":
-    logger: Logger = LOGGER(_name="test.py", _filename="test.log")
+    logger: Logger = LOGGER(_name="test.py", _filename="tests.log")
     logger.info(msg="Testing Start")
     logger.info(msg="Testing...")
     logger.error(msg="Testing Failed")
